@@ -12,7 +12,6 @@
     <div class="hbtns">
       <span id="level">Level 1: Grundlagen</span>
       <span id="cnt">4 / 57</span>
-      <button class="hbtn" onclick="showHelp()" title="Anleitung">❔</button>
       <button class="hbtn" onclick="hint()" title="Tipp">💡</button>
       <button class="hbtn" onclick="openLex()" title="Lexikon">📖</button>
       <button class="hbtn" id="soundBtn" onclick="toggleAudio()" title="Ton an/aus">🔇</button>
@@ -38,22 +37,6 @@
 
   <div id="grid"></div>
   <div id="toast"></div>
-
-  <div id="start" class="modal sh">
-    <div class="panel start-card">
-      <h1>💻 Informatik Alchemie</h1>
-      <p>Kombiniere zwei Informatik-Begriffe und entdecke neue Konzepte. Dein Fortschritt wird auf diesem Gerät gespeichert.</p>
-      <div class="start-grid">
-        <div class="start-item">🎯 Ziel: Entdecke alle 57 Informatik-Konzepte.</div>
-        <div class="start-item">👆 Tippe zwei Elemente an, zum Beispiel <b>Bit</b> + <b>Logik</b>.</div>
-        <div class="start-item">💡 Nach mehreren Fehlversuchen bekommst du automatisch einen kleinen Hinweis.</div>
-        <div class="start-item">📖 Im Lexikon findest du kurze Erklärungen und fachliche Hinweise.</div>
-      </div>
-      <div class="start-actions">
-        <button class="primary" onclick="closeStart()">Spiel starten</button>
-      </div>
-    </div>
-  </div>
 
   <div id="lex" class="modal">
     <div class="panel">
