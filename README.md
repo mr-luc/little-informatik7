@@ -16,7 +16,6 @@ Die App besteht aus statischen Dateien und läuft direkt im Browser:
 - `index.html` – Grundstruktur der App
 - `style.css` – Gestaltung, Layout und Hintergrund
 - `script.js` – Spiellogik, Kombinationen und Speicherung
-- `loesungen.html` – Lösungsliste für Vorbereitung und Ausdruck
 
 ## Funktionen
 
@@ -32,7 +31,6 @@ Die App besteht aus statischen Dateien und läuft direkt im Browser:
 - fachliche Hinweise bei vereinfachten Kombinationen
 - optionaler Ton
 - Speicherung des Fortschritts mit `localStorage`
-- eigene Lösungsliste
 
 ## Pädagogischer Hinweis
 
@@ -48,7 +46,6 @@ Mögliche Nutzung:
 2. Gefundene Begriffe werden im Heft gesammelt.
 3. Schwierige Kombinationen werden gemeinsam besprochen.
 4. Das Lexikon dient als kurze Wiederholung.
-5. Die Lösungsliste kann zur Vorbereitung oder als Kontrollblatt genutzt werden.
 
 ## Technischer Stand
 
