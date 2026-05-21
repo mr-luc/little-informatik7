@@ -1,1 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Informatik Alchemie – Klasse 7</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#eef2f7;--bg2:#ffffff;--bg3:#e4ebf3;--bd:#c2d2e2;--cy:#0a7fa8;--txt:#1a2a3a;--dim:#5a7894;--grn:#1a7a50;--red:#a02828}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column}
+#hdr{background:var(--bg2);border-bottom:1px solid var(--bd);padding:8px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:8px}
+#ttl{font-size:.9rem;font-weight:700;color:var(--cy);font-family:'Courier New',monospace;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbtns{display:flex;align-items:center;gap:6px;flex-shrink:0}
+#cnt{font-size:.7rem;color:var(--dim);margin-right:2px}
+.hbtn{background:var(--bg3);border:1.5px solid var(--bd);color:var(--cy);border-radius:8px;padding:4px 9px;cursor:pointer;font-size:.9rem;line-height:1;transition:background .15s}
+.hbtn:active{background:var(--bd)}
+#pb{height:3px;background:var(--bd);flex-shrink:0}
+#pf{height:100%;background:var(--cy);transition:width .5s}
+#cbar{background:var(--bg2);padding:9px 10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;border-bottom:1px solid var(--bd)}
+.cslot{width:72px;height:72px;border:2px dashed var(--bd);border-radius:12px;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
+.cslot.on{border-style:solid;border-color:var(--cy)}
+.cslot .se{font-size:1.6rem;line-height:1}
+.cslot .sn{font-size:.4rem;color:var(--dim);margin-top:2px;text-align:center;padding:0 3px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.op{color:var(--dim);font-size:1.1rem;font-weight:bold;flex-shrink:0}
+#rslot{width:72px;height:72px;border:2px solid transparent;border-radius:12px;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
+#rslot .se{font-size:1.6rem;line-height:1}
+#rslot .sn{font-size:.4rem;color:var(--dim);margin-top:2px;text-align:center;padding:0 3px}
+#rslot.ok{border-color:var(--grn);background:#e6f5ee;animation:pop .4s}
+#rslot.nw{border-color:var(--cy);background:#e0f3f8;animation:pop .5s}
+#rslot.no{border-color:var(--red);animation:shk .35s}
+@keyframes pop{0%{transform:scale(.75)}55%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes shk{0%,100%{transform:translateX(0)}30%{transform:translateX(-7px)}70%{transform:translateX(7px)}}
+#hint{padding:4px 12px;font-size:.62rem;color:var(--dim);text-align:center;flex-shrink:0;min-height:20px;font-family:'Courier New',monospace;line-height:1.3}
+#searchbar{padding:6px 10px;flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--bd)}
+#search{width:100%;padding:6px 10px;border:1.5px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--txt);font-size:.78rem;outline:none}
+#search:focus{border-color:var(--cy)}
+#grid{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:9px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.chip{display:flex;flex-direction:column;align-items:center;padding:7px 5px 5px;background:var(--bg2);border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;min-width:64px;max-width:76px;flex:0 0 auto;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .12s,border-color .12s,box-shadow .12s;border-top-width:3px}
+.chip:active{transform:scale(.93)}
+.chip.sel{border-color:var(--cy)!important;box-shadow:0 0 0 2px rgba(10,127,168,.25);transform:scale(1.06)}
+.chip.hl{box-shadow:0 0 0 3px rgba(230,170,20,.55);border-color:#e6aa14!important}
+.chip .em{font-size:1.4rem;line-height:1.1}
+.chip .nm{font-size:.44rem;margin-top:2px;text-align:center;white-space:nowrap;font-weight:600}
+@keyframes nin{0%{opacity:0;transform:scale(.5) rotate(-8deg)}60%{transform:scale(1.15) rotate(2deg)}100%{opacity:1;transform:scale(1)}}
+.chip.ni{animation:nin .5s ease}
+#toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%) translateY(80px);background:linear-gradient(135deg,#0a7fa8,#3dc8d8);color:#fff;padding:8px 18px;border-radius:20px;font-weight:700;font-size:.78rem;opacity:0;transition:transform .3s,opacity .3s;pointer-events:none;z-index:999;max-width:88%;text-align:center;font-family:'Courier New',monospace;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+#toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Lexikon */
+#lex{display:none;position:fixed;inset:0;background:rgba(20,40,60,.45);z-index:9000;align-items:center;justify-content:center;padding:14px}
+#lex.sh{display:flex}
+#lexbox{background:var(--bg);width:100%;max-width:560px;max-height:90%;border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+#lexhdr{background:var(--bg2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);flex-shrink:0}
+#lexhdr b{color:var(--cy);font-size:1rem}
+#lexhdr button{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--dim)}
+#lexbody{overflow-y:auto;padding:10px 14px;flex:1}
+.lexcat{margin:12px 0 6px;font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.lexcat .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.lexcat .pct{font-size:.62rem;color:var(--dim);font-weight:400;margin-left:auto}
+.lexrow{display:flex;gap:10px;padding:8px 6px;border-bottom:1px solid var(--bg3);align-items:flex-start}
+.lexrow .lem{font-size:1.5rem;flex-shrink:0;width:30px;text-align:center}
+.lexrow .ltx{flex:1}
+.lexrow .ln{font-weight:700;font-size:.82rem}
+.lexrow .ld{font-size:.72rem;color:var(--dim);margin:2px 0;line-height:1.35}
+.lexrow .lr{font-size:.66rem;color:var(--cy);font-family:'Courier New',monospace}
+#lexfoot{padding:10px 14px;border-top:1px solid var(--bd);background:var(--bg2);flex-shrink:0;text-align:center}
+#lexfoot button{background:var(--bg3);border:1.5px solid var(--bd);color:var(--red);border-radius:8px;padding:7px 16px;cursor:pointer;font-size:.78rem;font-weight:600}
+/* Win */
+#win{display:none;position:fixed;inset:0;background:rgba(255,255,255,.94);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9999;text-align:center;padding:24px}
+#win.sh{display:flex}
+#win h2{font-size:1.3rem;color:var(--cy);font-family:'Courier New',monospace}
+#win p{color:var(--txt);font-size:.85rem;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div id="ttl">💻 Informatik Alchemie</div>
+  <div class="hbtns">
+    <span id="cnt">4 / 57</span>
+    <button class="hbtn" onclick="hint()" title="Tipp">💡</button>
+    <button class="hbtn" onclick="openLex()" title="Lexikon">📖</button>
+  </div>
+</div>
+<div id="pb"><div id="pf" style="width:7%"></div></div>
+<div id="cbar">
+  <div class="cslot" id="sa"><span class="se">❓</span><span class="sn">Auswählen</span></div>
+  <div class="op">+</div>
+  <div class="cslot" id="sb"><span class="se">❓</span><span class="sn">Auswählen</span></div>
+  <div class="op">=</div>
+  <div id="rslot"><span class="se" id="re">❓</span><span class="sn" id="rn"></span></div>
+</div>
+<div id="hint">// Tippe zwei Elemente an, um sie zu kombinieren</div>
+<div id="searchbar"><input id="search" placeholder="🔍 Element suchen…" oninput="renderGrid()"></div>
+<div id="grid"></div>
+<div id="toast"></div>
 
+<div id="lex"><div id="lexbox">
+  <div id="lexhdr"><b>📖 Lexikon</b><button onclick="closeLex()">✕</button></div>
+  <div id="lexbody"></div>
+  <div id="lexfoot"><button onclick="resetGame()">🔄 Spiel zurücksetzen</button></div>
+</div></div>
+
+<div id="win">
+  <div style="font-size:3rem">🏆</div>
+  <h2>./win --alle-entdeckt</h2>
+  <p>Du hast alle 57 Informatik-Konzepte gefunden!<br>Du bist ein echter Informatik-Profi! 🎉</p>
+</div>
+
+<script>
+// EL[key] = [Name, Emoji, Kategorie, Definition]
+const EL={
+  bit:["Bit","🔵","grund","Kleinste Informationseinheit – ist entweder 0 oder 1."],
+  strom:["Strom","⚡","grund","Elektrische Energie, die alle Computer-Bauteile antreibt."],
+  mensch:["Mensch","🧑","grund","Programmiert, bedient und nutzt den Computer."],
+  logik:["Logik","🧩","grund","Regeln, nach denen wahr/falsch-Entscheidungen getroffen werden."],
+  byte:["Byte","💾","daten","8 Bits zusammen – speichert z.B. genau ein Zeichen."],
+  signal:["Signal","📶","daten","Ein Bit, das als Strom über eine Leitung übertragen wird."],
+  binaerzahl:["Binärzahl","🔢","daten","Zahl, die nur aus 0 und 1 besteht (Dualsystem)."],
+  zahl:["Dezimalzahl","🔟","daten","Zahl im Zehnersystem mit den Ziffern 0–9, wie wir sie kennen."],
+  pixel:["Pixel","⬜","daten","Kleinster einzelner Bildpunkt auf dem Bildschirm."],
+  zeichen:["Zeichen","🔤","daten","Ein Buchstabe, eine Ziffer oder ein Symbol (per ASCII codiert)."],
+  datei:["Datei","📄","daten","Gespeicherte Daten mit einem Namen, z.B. ein Foto oder Text."],
+  text:["Text","📝","daten","Eine Folge von Zeichen, die Wörter und Sätze bildet."],
+  bild:["Bild","🖼️","daten","Aus vielen Pixeln zusammengesetzte Grafik."],
+  video:["Video","🎬","daten","Bewegte Bilder zusammen mit Ton."],
+  ton:["Ton","🎵","daten","Hörbares Signal, z.B. Musik oder Sprache."],
+  qrcode:["QR-Code","🔲","daten","Quadratisches Muster, das Daten als Bild speichert."],
+  ordner:["Ordner","📁","daten","Behälter, der mehrere Dateien zusammen ablegt."],
+  arbeitsspeicher:["Arbeitsspeicher","💡","hardware","Schneller Speicher (RAM) – behält Daten nur, solange Strom da ist."],
+  bildschirm:["Bildschirm","📺","hardware","Zeigt Bilder und Texte sichtbar an (Monitor)."],
+  transistor:["Transistor","🔌","hardware","Winziger elektronischer Schalter – Grundbaustein des Computers."],
+  gatter:["Logikgatter","🚪","hardware","Schaltung, die logische Verknüpfungen wie UND/ODER ausführt."],
+  schaltkreis:["Schaltkreis","⬛","hardware","Viele verbundene Gatter auf einem Chip."],
+  prozessor:["Prozessor","🧠","hardware","Das Rechenzentrum (CPU) – führt alle Befehle aus."],
+  rechner:["Rechner","🖥️","hardware","Prozessor und Arbeitsspeicher, die zusammen rechnen."],
+  festplatte:["Festplatte","🗄️","hardware","Speicher, der Daten dauerhaft behält – auch ohne Strom."],
+  computer:["Computer","💻","hardware","Vollständige Maschine zum Verarbeiten von Daten."],
+  algorithmus:["Algorithmus","📋","prog","Schritt-für-Schritt-Anleitung zum Lösen eines Problems."],
+  bedingung:["Bedingung","❓","prog","Eine wenn-dann-Entscheidung im Programm (if)."],
+  sequenz:["Sequenz","➡️","prog","Befehle, die nacheinander ausgeführt werden."],
+  schleife:["Schleife","🔄","prog","Wiederholt Befehle, solange eine Bedingung gilt (Loop)."],
+  funktion:["Funktion","📦","prog","Wiederverwendbarer Block aus mehreren Befehlen."],
+  code:["Code","🔡","prog","In einer Programmiersprache geschriebener Algorithmus."],
+  pseudocode:["Pseudocode","📓","prog","Algorithmus in einfacher Sprache – noch nicht für den Computer."],
+  struktogramm:["Struktogramm","📊","prog","Diagramm, das einen Algorithmus in Blöcken darstellt."],
+  fehler:["Fehler / Bug","❌","prog","Das Programm tut nicht, was es soll."],
+  debugging:["Debugging","🔍","prog","Fehler im Programm suchen und beheben."],
+  programm:["Programm","💿","prog","Code, der vom Prozessor ausgeführt wird."],
+  software:["Software","📱","prog","Alle Programme zusammen (Gegenteil von Hardware)."],
+  betriebssystem:["Betriebssystem","⚙️","prog","Grundprogramm, das den Computer steuert (z.B. Windows)."],
+  app:["App","📲","prog","Anwendungsprogramm für Nutzer, oft auf dem Handy."],
+  roboter:["Roboter","🦾","prog","Maschine, die nach einem Programm Aufgaben ausführt."],
+  ki:["KI","🤖","prog","Künstliche Intelligenz – Software, die scheinbar denkt und lernt."],
+  netzwerk:["Netzwerk","🕸️","netz","Mehrere verbundene Computer, die Daten austauschen."],
+  protokoll:["Protokoll","📜","netz","Regeln, wie Geräte miteinander kommunizieren (z.B. HTTP)."],
+  router:["Router","📡","netz","Gerät, das Datenpakete im Netzwerk weiterleitet."],
+  ipadresse:["IP-Adresse","🏷️","netz","Eindeutige Nummer eines Geräts im Netzwerk."],
+  internet:["Internet","🌍","netz","Weltweites Netz aus Millionen verbundener Netzwerke."],
+  server:["Server","🗃️","netz","Computer, der Daten oder Dienste bereitstellt."],
+  cloud:["Cloud","☁️","netz","Speicher und Dienste auf fernen Servern im Internet."],
+  website:["Website","🌐","netz","Seite im Internet, die im Browser angezeigt wird."],
+  email:["E-Mail","📧","netz","Elektronische Nachricht, übers Internet verschickt."],
+  passwort:["Passwort","🔑","sicher","Geheime Zeichenfolge, die ein Konto schützt."],
+  verschluesselung:["Verschlüsselung","🔐","sicher","Macht Daten unlesbar – außer für Befugte."],
+  datenschutz:["Datenschutz","🛡️","sicher","Schutz persönlicher Daten vor Missbrauch."],
+  firewall:["Firewall","🧱","sicher","Schutzwall, der unerwünschte Zugriffe blockiert."],
+  datenbank:["Datenbank","🗂️","sicher","Geordnete Sammlung vieler Daten zum schnellen Finden."],
+  suche:["Suchalgorithmus","🔎","sicher","Verfahren, das gezielt Daten in einer Menge findet."],
+};
+const TOTAL=Object.keys(EL).length;
+
+const CAT={
+  grund:["Grundelemente","#5a7894"],
+  daten:["Daten & Darstellung","#1e7fd0"],
+  hardware:["Hardware","#d07a1a"],
+  prog:["Programmierung","#1a9a5a"],
+  netz:["Netzwerk","#8050c0"],
+  sicher:["Sicherheit & Daten","#c0405a"],
+};
+
+const R={},REV={};
+function r(a,b,c){R[[a,b].sort().join("+")]=c;if(!REV[c])REV[c]=[a,b]}
+
+// Daten & Darstellung
+r("bit","bit","byte");r("bit","strom","signal");r("bit","logik","binaerzahl");
+r("binaerzahl","binaerzahl","zahl");r("byte","byte","pixel");r("byte","logik","zeichen");
+r("byte","zeichen","datei");r("byte","strom","arbeitsspeicher");r("zeichen","zeichen","text");
+r("zeichen","mensch","passwort");r("pixel","pixel","bild");r("bild","strom","bildschirm");
+r("bild","ton","video");r("signal","signal","ton");r("signal","logik","protokoll");
+r("binaerzahl","bild","qrcode");
+// Hardware
+r("strom","logik","transistor");r("transistor","transistor","gatter");r("gatter","gatter","schaltkreis");
+r("schaltkreis","strom","prozessor");r("prozessor","arbeitsspeicher","rechner");r("ordner","strom","festplatte");
+r("datei","datei","ordner");r("rechner","festplatte","computer");
+// Programmierung
+r("mensch","logik","algorithmus");r("algorithmus","logik","bedingung");r("algorithmus","algorithmus","sequenz");
+r("bedingung","algorithmus","schleife");r("sequenz","logik","funktion");r("algorithmus","zeichen","code");
+r("algorithmus","text","pseudocode");r("algorithmus","bild","struktogramm");r("code","logik","fehler");
+r("code","prozessor","programm");r("fehler","algorithmus","debugging");r("programm","programm","software");
+r("software","computer","betriebssystem");r("software","mensch","app");r("algorithmus","zahl","verschluesselung");
+// Netzwerk
+r("netzwerk","protokoll","router");r("computer","computer","netzwerk");r("netzwerk","zahl","ipadresse");
+r("netzwerk","logik","firewall");r("router","router","internet");r("code","internet","website");
+r("text","internet","email");r("computer","internet","server");r("server","server","cloud");
+// Datenschutz & Datenbank
+r("passwort","internet","datenschutz");r("datei","logik","datenbank");r("datenbank","algorithmus","suche");
+// KI & Robotik
+r("computer","algorithmus","roboter");r("mensch","roboter","ki");
+// Bonus
+r("binaerzahl","strom","signal");r("mensch","internet","email");r("mensch","computer","betriebssystem");
+
+const START=["bit","strom","mensch","logik"];
+let disc=[...START];
+let dset=new Set(disc);
+let sel=null,rTmr=null,tTmr=null;
+
+const grid=document.getElementById("grid");
+const sa=document.getElementById("sa"),sb=document.getElementById("sb");
+const rslot=document.getElementById("rslot"),re=document.getElementById("re"),rn=document.getElementById("rn");
+const hintEl=document.getElementById("hint"),toast=document.getElementById("toast"),search=document.getElementById("search");
+
+function key2(a,b){return [a,b].sort().join("+")}
+
+function setSlot(el,k){
+  if(k){const[n,e]=EL[k];el.innerHTML=`<span class="se">${e}</span><span class="sn">${n}</span>`;el.classList.add("on")}
+  else{el.innerHTML=`<span class="se">❓</span><span class="sn">Auswählen</span>`;el.classList.remove("on")}
+}
+function resetResult(){
+  rslot.className="";re.textContent="❓";rn.textContent="";
+  setSlot(sa,null);setSlot(sb,null);
+  hintEl.textContent="// Tippe zwei Elemente an, um sie zu kombinieren";
+  renderGrid();
+}
+function renderGrid(newK){
+  const q=(search.value||"").trim().toLowerCase();
+  grid.innerHTML="";
+  for(const k of disc){
+    const[n,e,cat]=EL[k];
+    if(q && !n.toLowerCase().includes(q))continue;
+    const c=document.createElement("div");
+    c.className="chip"+(sel===k?" sel":"")+(k===newK?" ni":"");
+    c.style.borderTopColor=CAT[cat][1];
+    c.innerHTML=`<span class="em">${e}</span><span class="nm" style="color:${CAT[cat][1]}">${n}</span>`;
+    c.addEventListener("click",()=>onChip(k));
+    grid.appendChild(c);
+  }
+  const n=dset.size;
+  document.getElementById("cnt").textContent=`${n} / ${TOTAL}`;
+  document.getElementById("pf").style.width=`${(n/TOTAL*100).toFixed(1)}%`;
+  if(n===TOTAL)setTimeout(()=>document.getElementById("win").classList.add("sh"),900);
+}
+function onChip(k){
+  if(sel===null){
+    sel=k;setSlot(sa,k);
+    hintEl.textContent=`> ${EL[k][1]} ${EL[k][0]} ausgewählt — wähle ein zweites Element`;
+    renderGrid();
+  } else if(sel===k && !R[key2(k,k)]){
+    sel=null;setSlot(sa,null);
+    hintEl.textContent="// Tippe zwei Elemente an, um sie zu kombinieren";
+    renderGrid();
+  } else {
+    const res=R[key2(sel,k)];
+    setSlot(sb,k);
+    if(rTmr)clearTimeout(rTmr);
+    if(res){
+      const isNew=!dset.has(res);
+      if(isNew){disc.push(res);dset.add(res);saveProgress()}
+      const[rNm,rEm,rCat,rDef]=EL[res];
+      re.textContent=rEm;rn.textContent=rNm;
+      rslot.className=isNew?"nw":"ok";
+      if(isNew){
+        hintEl.innerHTML=`📘 <b>${rNm}:</b> ${rDef}`;
+        showToast(`✅ Neu: ${rEm} ${rNm}`);
+      } else {
+        hintEl.textContent=`> ${rEm} ${rNm} (bereits bekannt)`;
+      }
+      renderGrid(isNew?res:null);
+    } else {
+      re.textContent="✕";rn.textContent="Keine Kombi";
+      rslot.className="no";
+      hintEl.textContent="> ERROR: keine Kombination gefunden";
+      renderGrid();
+    }
+    sel=null;
+    rTmr=setTimeout(resetResult,res&&!dset.has(res)?3600:res?1600:900);
+  }
+}
+function showToast(msg){
+  toast.textContent=msg;toast.classList.add("sh");
+  if(tTmr)clearTimeout(tTmr);
+  tTmr=setTimeout(()=>toast.classList.remove("sh"),2600);
+}
+
+// === TIPP ===
+function hint(){
+  const opts=[];
+  for(let i=0;i<disc.length;i++)for(let j=i;j<disc.length;j++){
+    const res=R[key2(disc[i],disc[j])];
+    if(res && !dset.has(res))opts.push([disc[i],disc[j]]);
+  }
+  if(!opts.length){showToast("Keine neuen Kombis mit aktuellen Elementen");return}
+  const[a,b]=opts[Math.floor(Math.random()*opts.length)];
+  hintEl.innerHTML=`💡 Tipp: kombiniere <b>${EL[a][1]} ${EL[a][0]}</b> + <b>${EL[b][1]} ${EL[b][0]}</b>`;
+  search.value="";
+  [a,b].forEach(k=>{
+    const chips=grid.querySelectorAll(".chip");
+    chips.forEach(c=>{if(c.querySelector(".nm").textContent===EL[k][0]){c.classList.add("hl");setTimeout(()=>c.classList.remove("hl"),2500)}});
+  });
+  renderGrid();
+  setTimeout(()=>{[a,b].forEach(k=>{grid.querySelectorAll(".chip").forEach(c=>{if(c.querySelector(".nm").textContent===EL[k][0])c.classList.add("hl")})})},30);
+}
+
+// === LEXIKON ===
+function openLex(){
+  const body=document.getElementById("lexbody");
+  let html="";
+  for(const cat in CAT){
+    const[cn,cc]=CAT[cat];
+    const all=Object.keys(EL).filter(k=>EL[k][2]===cat);
+    const found=all.filter(k=>dset.has(k));
+    if(!found.length)continue;
+    html+=`<div class="lexcat"><span class="dot" style="background:${cc}"></span>${cn}<span class="pct">${found.length}/${all.length}</span></div>`;
+    for(const k of found){
+      const[n,e,,def]=EL[k];
+      let rec="Grundelement";
+      if(REV[k]){const[a,b]=REV[k];rec=`${EL[a][1]} ${EL[a][0]} + ${EL[b][1]} ${EL[b][0]}`}
+      html+=`<div class="lexrow"><div class="lem">${e}</div><div class="ltx"><div class="ln" style="color:${cc}">${n}</div><div class="ld">${def}</div><div class="lr">= ${rec}</div></div></div>`;
+    }
+  }
+  body.innerHTML=html;
+  document.getElementById("lex").classList.add("sh");
+}
+function closeLex(){document.getElementById("lex").classList.remove("sh")}
+function resetGame(){
+  if(!confirm("Wirklich neu starten? Alle entdeckten Elemente gehen verloren."))return;
+  disc=[...START];dset=new Set(disc);sel=null;
+  search.value="";saveProgress();resetResult();closeLex();
+  document.getElementById("win").classList.remove("sh");
+}
+
+// === SPEICHERN ===
+async function saveProgress(){try{await window.storage.set("ia7:disc",JSON.stringify(disc),false)}catch(e){}}
+async function loadProgress(){
+  try{
+    const r=await window.storage.get("ia7:disc",false);
+    if(r&&r.value){
+      const arr=JSON.parse(r.value).filter(k=>EL[k]);
+      const merged=[...START];
+      for(const k of arr)if(!merged.includes(k))merged.push(k);
+      disc=merged;dset=new Set(disc);
+    }
+  }catch(e){}
+  renderGrid();
+}
+
+renderGrid();
+loadProgress();
+</script>
+</body>
+</html>
